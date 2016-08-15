@@ -196,29 +196,21 @@ describe RSpecStripe::Runner do
     context "without a customer" do
       it "raises error" do
         runner = RSpecStripe::Runner.new({invoice: amount})
-        expect { runner.call! }.to raise_error("No subscription given")
+        expect { runner.call! }.to raise_error("No customer given")
       end
     end
 
-    context "with a customer and subscription" do
+    context "with a customer" do
       let(:customer_double) { double(Stripe::Customer, id: "id") }
-      let(:subscriptions_double) { double("subscriptions") }
-      let(:subscription_double) { double(Stripe::Subscription, id: "id") }
-      let(:allowed_params) { { plan: "test", metadata: {} } }
-      let(:invoices_double) { double("invoices") }
-      let(:expected_params) { { amount_due: amount } }
-
+      let(:expected_params) { { customer: customer_double.id, amount_due: amount } }
       before(:each) {
-        allow(Stripe::Customer).to receive(:retrieve).once { customer_double }
-        allow(customer_double).to receive(:subscriptions).once { subscriptions_double }
-        allow(subscriptions_double).to receive(:create).once.with(allowed_params) { subscription_double }
-        expect(subscription_double).to receive(:invoices).once { invoices_double }
-        expect(invoices_double).to receive(:create).once.with(expected_params)
+        expect(Stripe::Customer).to receive(:retrieve).once { customer_double }
+        expect(Stripe::Invoice).to receive(:create).once.with(expected_params)
       }
 
       context "with an amount specified" do
         it "creates an invoice for the amount" do
-          runner = RSpecStripe::Runner.new({customer: "id", subscription: "test", invoice: amount})
+          runner = RSpecStripe::Runner.new({customer: "id", invoice: amount})
           runner.call!
         end
       end
