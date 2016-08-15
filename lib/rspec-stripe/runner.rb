@@ -47,6 +47,7 @@ module RSpecStripe
 
     def invoice_factory
       raise "No customer given" unless customer
+      raise "No subscription given" unless subscription
       @invoice_factory ||= RSpecStripe::Factory::Invoice.new(customer)
     end
 

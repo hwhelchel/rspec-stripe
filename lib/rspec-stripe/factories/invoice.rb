@@ -2,7 +2,7 @@ module RSpecStripe::Factory
   Invoice = Struct.new(:customer) do
     def get
       @get ||= begin
-        Stripe::Invoice.create(customer: customer.id)
+        Stripe::Invoice.list(customer: customer.id).first
       end
     end
 
