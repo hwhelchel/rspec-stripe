@@ -7,8 +7,7 @@ module RSpecStripe::Factory
     end
 
     def cleanup
-      get.closed = true
-      get.save
+      # no-op
     end
   end
 end
