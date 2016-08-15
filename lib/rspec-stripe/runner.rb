@@ -1,6 +1,6 @@
 module RSpecStripe
   class Runner
-    attr_accessor :recipes, :customer, :plan, :subscription, :card, :token
+    attr_accessor :recipes, :customer, :plan, :subscription, :card, :token, :invoice
 
     def initialize(recipes)
       @recipes = recipes
@@ -12,6 +12,7 @@ module RSpecStripe
       @card = card_factory.get if recipes[:card]
       @token = token_factory.get if recipes[:token]
       @subscription = subscription_factory.get if recipes[:subscription]
+      @invoice = invoice_factory.get if recipes[:invoice]
     end
 
     def cleanup!
@@ -41,6 +42,11 @@ module RSpecStripe
     def subscription_factory
       raise "No customer given" unless customer
       @subscription_factory ||= RSpecStripe::Factory::Subscription.new(recipes[:subscription], customer, recipes.fetch(:subscription_metadata, {}))
+    end
+
+    def invoice_factory
+      raise "No subscription given" unless subscription
+      @invoice_factory ||= RSpecStripe::Factory::Invoice.new(recipes[:invoice], subscription)
     end
 
     def card_factory

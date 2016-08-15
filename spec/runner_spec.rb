@@ -189,6 +189,41 @@ describe RSpecStripe::Runner do
       end
     end
   end
+
+  describe "invoice" do
+    let(:amount) { 1_000 }
+
+    context "without a customer" do
+      it "raises error" do
+        runner = RSpecStripe::Runner.new({invoice: amount})
+        expect { runner.call! }.to raise_error("No subscription given")
+      end
+    end
+
+    context "with a customer and subscription" do
+      let(:customer_double) { double(Stripe::Customer, id: "id") }
+      let(:subscriptions_double) { double("subscriptions") }
+      let(:subscription_double) { double(Stripe::Subscription, id: "id") }
+      let(:allowed_params) { { plan: "test", metadata: {} } }
+      let(:invoices_double) { double("invoices") }
+      let(:expected_params) { { amount_due: amount } }
+
+      before(:each) {
+        allow(Stripe::Customer).to receive(:retrieve).once { customer_double }
+        allow(customer_double).to receive(:subscriptions).once { subscriptions_double }
+        allow(subscriptions_double).to receive(:create).once.with(allowed_params) { subscription_double }
+        expect(subscription_double).to receive(:invoices).once { invoices_double }
+        expect(invoices_double).to receive(:create).once.with(expected_params)
+      }
+
+      context "with an amount specified" do
+        it "creates an invoice for the amount" do
+          runner = RSpecStripe::Runner.new({customer: "id", subscription: "test", invoice: amount})
+          runner.call!
+        end
+      end
+    end
+  end
 end
 
 FakeWeb.allow_net_connect = true

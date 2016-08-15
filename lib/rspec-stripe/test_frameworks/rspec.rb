@@ -26,6 +26,10 @@ module RSpecStripe
               @stripe_subscription ||= @runner.subscription
             end
 
+            def stripe_invoice
+              @stripe_invoice ||= @runner.invoice
+            end
+
             def stripe_token
               @stripe_token ||= @runner.token
             end
