@@ -198,23 +198,18 @@ describe RSpecStripe::Runner do
       end
     end
 
-    context "with a customer and subscription" do
+    context "with a customer" do
       let(:customer_double) { double(Stripe::Customer, id: "customer-id") }
-      let(:subscription_double) { double(Stripe::Subscription, id: "subscription-id") }
-      let(:subscriptions_double) { double("subscriptions") }
-      let(:expected_params) { { customer: customer_double.id, subscription: subscription_double.id } }
+      let(:expected_params) { { customer: customer_double.id } }
 
       before(:each) {
         allow(Stripe::Customer).to receive(:retrieve).once { customer_double }
-        allow(customer_double).to receive(:subscriptions).once { subscriptions_double }
-        allow(subscriptions_double).to receive(:create).once { subscription_double }
-
         expect(Stripe::Invoice).to receive(:create).once.with(expected_params)
       }
 
       context "with an amount specified" do
         it "creates an invoice for the amount" do
-          runner = RSpecStripe::Runner.new({customer: "customer-id", subscription: "subscription-id", invoice: true})
+          runner = RSpecStripe::Runner.new({customer: "customer-id", invoice: true})
           runner.call!
         end
       end

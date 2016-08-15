@@ -1,8 +1,8 @@
 module RSpecStripe::Factory
-  Invoice = Struct.new(:subscription, :customer) do
+  Invoice = Struct.new(:customer) do
     def get
       @get ||= begin
-        Stripe::Invoice.create(customer: customer.id, subscription: subscription.id)
+        Stripe::Invoice.create(customer: customer.id)
       end
     end
 
