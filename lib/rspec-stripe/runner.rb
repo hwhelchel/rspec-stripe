@@ -24,7 +24,8 @@ module RSpecStripe
     private
 
     def factories
-      [ @subscription_factory, @plan_factory, @card_factory, @customer_factory, @token_factory ]
+      [ @subscription_factory, @plan_factory, @card_factory, @customer_factory,
+        @token_factory, @invoice_factory ]
     end
 
     def customer_factory
@@ -46,7 +47,8 @@ module RSpecStripe
 
     def invoice_factory
       raise "No customer given" unless customer
-      @invoice_factory ||= RSpecStripe::Factory::Invoice.new(recipes[:invoice], customer)
+      raise "No subscription given" unless subscription
+      @invoice_factory ||= RSpecStripe::Factory::Invoice.new(subscription, customer)
     end
 
     def card_factory

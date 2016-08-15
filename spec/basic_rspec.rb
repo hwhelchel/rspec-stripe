@@ -27,7 +27,7 @@ describe 'Basic' do
     expect(stripe_token).not_to eq(nil)
   end
 
-  it "gives me an invoice", stripe: { customer: :new, plan: "test", card: :visa, invoice: 1000 } do
+  it "gives me an invoice", stripe: { customer: :new, plan: "test", card: :visa, invoice: true } do
     expect(stripe_invoice).not_to eq(nil)
   end
 end
